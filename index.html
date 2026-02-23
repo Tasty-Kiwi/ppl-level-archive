@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PPL Level Archive</title>
+    <!-- Use a unique display font for headings and system monospace for body -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@700;800&display=swap"
+      rel="stylesheet" />
+    <style>
+      :root {
+        --bg: #050505;
+        --fg: #e0e0e0;
+        --accent-1: #ff2a2a; /* striking red */
+        --accent-2: #00ffcc; /* neon cyan */
+        --grid-color: rgba(255, 255, 255, 0.05);
+        --border: 2px solid var(--fg);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background-color: var(--bg);
+        color: var(--fg);
+        font-family: "Share Tech Mono", monospace;
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        background-image:
+          linear-gradient(var(--grid-color) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+        background-size: 40px 40px;
+        background-position: center center;
+        position: relative;
+      }
+
+      /* Scanline effect */
+      body::after {
+        content: " ";
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background:
+          linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%),
+          linear-gradient(
+            90deg,
+            rgba(255, 0, 0, 0.06),
+            rgba(0, 255, 0, 0.02),
+            rgba(0, 0, 255, 0.06)
+          );
+        z-index: 2;
+        background-size:
+          100% 2px,
+          3px 100%;
+        pointer-events: none;
+      }
+
+      header {
+        padding: 4rem 2rem;
+        border-bottom: var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        position: relative;
+        background: rgba(5, 5, 5, 0.8);
+        backdrop-filter: blur(10px);
+        z-index: 10;
+      }
+
+      h1 {
+        font-family: "Syne", sans-serif;
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 800;
+        text-transform: uppercase;
+        line-height: 0.9;
+        letter-spacing: -2px;
+        text-shadow: 4px 4px 0px var(--accent-1);
+        animation: glitch 3s infinite 2s;
+      }
+
+      main {
+        flex: 1;
+        padding: 4rem 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        width: 100%;
+        z-index: 10;
+      }
+
+      .levels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+      }
+
+      .level-card {
+        display: block;
+        text-decoration: none;
+        color: var(--fg);
+        border: var(--border);
+        padding: 2rem;
+        position: relative;
+        background: rgba(0, 0, 0, 0.6);
+        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        overflow: hidden;
+      }
+
+      .level-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--accent-2);
+        transition: transform 0.4s cubic-bezier(0.86, 0, 0.07, 1);
+        z-index: -1;
+      }
+
+      .level-card:nth-child(even)::before {
+        background: var(--accent-1);
+      }
+
+      .level-card:hover {
+        transform: translate(8px, -8px);
+        box-shadow: -8px 8px 0px var(--fg);
+        color: #000;
+      }
+
+      .level-card:hover::before {
+        transform: translateX(100%);
+      }
+
+      .level-card::after {
+        content: "";
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        width: 20px;
+        height: 20px;
+        border-bottom: 2px solid currentColor;
+        border-right: 2px solid currentColor;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+      }
+
+      .level-card:hover::after {
+        opacity: 1;
+      }
+
+      .level-index {
+        font-size: 0.8rem;
+        opacity: 0.6;
+        margin-bottom: 1rem;
+        display: block;
+        font-weight: bold;
+        letter-spacing: 1px;
+      }
+
+      .level-name {
+        font-family: "Syne", sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        line-height: 1.1;
+        word-break: break-word;
+      }
+
+      .level-card:hover .level-name {
+        animation: none;
+      }
+
+      .status-badge {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        font-size: 0.7rem;
+        padding: 0.2rem 0.5rem;
+        border: 1px solid currentColor;
+        border-radius: 50px;
+        text-transform: uppercase;
+      }
+
+      footer {
+        border-top: var(--border);
+        padding: 2rem;
+        text-align: center;
+        font-size: 0.9rem;
+        background: #000;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        display: flex;
+        justify-content: space-between;
+        z-index: 10;
+      }
+
+      @keyframes glitch {
+        0% {
+          text-shadow: 4px 4px 0px var(--accent-1);
+        }
+        1% {
+          text-shadow: -4px -4px 0px var(--accent-2);
+        }
+        2% {
+          text-shadow: 4px 4px 0px var(--accent-1);
+        }
+        100% {
+          text-shadow: 4px 4px 0px var(--accent-1);
+        }
+      }
+
+      @media (max-width: 768px) {
+        header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+        .levels-grid {
+          grid-template-columns: 1fr;
+        }
+        h1 {
+          text-shadow: 2px 2px 0px var(--accent-1);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PPL Levels</h1>
+    </header>
+
+    <main>
+      <div class="levels-grid">
+        <a href="ppl-level/cage-theory-v1/index.html" class="level-card">
+          <span class="level-index">ID: 01</span>
+          <h2 class="level-name">cage-theory-v1</h2>
+          <div class="status-badge">LEGACY</div>
+        </a>
+        <a href="ppl-level/cage-theory-v2/index.html" class="level-card">
+          <span class="level-index">ID: 02</span>
+          <h2 class="level-name">cage-theory-v2</h2>
+          <div class="status-badge">RELEASED</div>
+        </a>
+        <a href="ppl-level/deadline/index.html" class="level-card">
+          <span class="level-index">ID: 03</span>
+          <h2 class="level-name">deadline</h2>
+          <div class="status-badge">RELEASED</div>
+        </a>
+        <a href="ppl-level/happy-pi-day/index.html" class="level-card">
+          <span class="level-index">ID: 04</span>
+          <h2 class="level-name">happy-pi-day</h2>
+          <div class="status-badge">EXTRA</div>
+        </a>
+        <a href="ppl-level/pewfarm/index.html" class="level-card">
+          <span class="level-index">ID: 05</span>
+          <h2 class="level-name">pewfarm</h2>
+          <div class="status-badge">LEGACY</div>
+        </a>
+        <a href="ppl-level/polyeskiv/index.html" class="level-card">
+          <span class="level-index">ID: 06</span>
+          <h2 class="level-name">polyeskiv</h2>
+          <div class="status-badge">EXPERIMENTAL</div>
+        </a>
+        <a href="ppl-level/polygons/index.html" class="level-card">
+          <span class="level-index">ID: 07</span>
+          <h2 class="level-name">polygons</h2>
+          <div class="status-badge">RELEASED</div>
+        </a>
+        <a href="ppl-level/polygons-alpha/index.html" class="level-card">
+          <span class="level-index">ID: 08</span>
+          <h2 class="level-name">polygons-alpha</h2>
+          <div class="status-badge">LEGACY</div>
+        </a>
+        <a href="ppl-level/rc-vs-sh/index.html" class="level-card">
+          <span class="level-index">ID: 09</span>
+          <h2 class="level-name">rc-vs-sh</h2>
+          <div class="status-badge">RELEASED</div>
+        </a>
+        <a href="ppl-level/something/index.html" class="level-card">
+          <span class="level-index">ID: 10</span>
+          <h2 class="level-name">something</h2>
+          <div class="status-badge">EXTRA</div>
+        </a>
+        <a href="ppl-level/the-sandbox/index.html" class="level-card">
+          <span class="level-index">ID: 11</span>
+          <h2 class="level-name">the-sandbox</h2>
+          <div class="status-badge">LEGACY</div>
+        </a>
+        <a href="ppl-level/total-randomness/index.html" class="level-card">
+          <span class="level-index">ID: 12</span>
+          <h2 class="level-name">total-randomness</h2>
+          <div class="status-badge">LEGACY</div>
+        </a>
+        <a href="ppl-level/warmup/index.html" class="level-card">
+          <span class="level-index">ID: 13</span>
+          <h2 class="level-name">warmup</h2>
+          <div class="status-badge">RELEASED</div>
+        </a>
+      </div>
+    </main>
+
+    <footer>
+      <div>(C) TASTY KIWI</div>
+    </footer>
+  </body>
+</html>
