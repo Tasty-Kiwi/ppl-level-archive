@@ -259,12 +259,12 @@
         try {
           WebAssembly;
           var xhr = new XMLHttpRequest();
-          xhr.open("GET", "/pewengine/ppl-level-archive/pewengine.wasm", true);
+          xhr.open("GET", "/pewengine/pewengine.wasm", true);
           xhr.responseType = "arraybuffer";
           xhr.onload = function () {
             Module.wasmBinary = xhr.response;
             var script = document.createElement("script");
-            script.src = "/pewengine/ppl-level-archive/pewengine.js";
+            script.src = "/pewengine/pewengine.js";
             document.body.appendChild(script);
           };
           xhr.send(null);
